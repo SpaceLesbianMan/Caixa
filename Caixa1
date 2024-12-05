@@ -1,0 +1,103 @@
+/******************************************************************/ 
+/* Aluno1: Nome Completo - Número de matrícula: 12345678 */
+/* Aluno2: Nome Completo - Número de matrícula: 12345678 */
+/* Exercício-Programa 1 — Caixa Eletrônico */
+/* Programação Avançada - 2024 - Professor: Bruno Perillo */
+/* Compilador: gcc versão ... */
+/******************************************************************/
+
+#include <stdio.h>
+#include <stdbool.h>
+
+// Declaração dos valores das cédulas
+#define QTD_NOTAS 7
+int valores_notas[QTD_NOTAS] = {100, 50, 20, 10, 5, 2, 1};
+
+// Função para exibir a quantidade de cédulas e o total em caixa
+void exibir_caixa(int cedulas[]) {
+    int total = 0;
+    printf("R$ 100 R$ 50 R$ 20 R$ 10 R$ 5  R$ 2  R$ 1  Total\n");
+    printf("Quantidade de cédulas: ");
+    for (int i = 0; i < QTD_NOTAS; i++) {
+        printf("%d ", cedulas[i]);
+        total += cedulas[i] * valores_notas[i];
+    }
+    printf("%d\n", total);
+}
+
+// Função para processar saques
+bool realizar_saque(int cedulas[], int valor) {
+    int copia_cedulas[QTD_NOTAS];
+    for (int i = 0; i < QTD_NOTAS; i++) {
+        copia_cedulas[i] = cedulas[i];
+    }
+
+    for (int i = 0; i < QTD_NOTAS; i++) {
+        while (valor >= valores_notas[i] && copia_cedulas[i] > 0) {
+            valor -= valores_notas[i];
+            copia_cedulas[i]--;
+        }
+    }
+
+    if (valor == 0) {
+        for (int i = 0; i < QTD_NOTAS; i++) {
+            cedulas[i] = copia_cedulas[i];
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Função para processar depósitos
+void realizar_deposito(int cedulas[], int deposito[]) {
+    for (int i = 0; i < QTD_NOTAS; i++) {
+        cedulas[i] += deposito[i];
+    }
+}
+
+int main() {
+    int cedulas[QTD_NOTAS];
+
+    // Entrada da quantidade inicial de cédulas
+    printf("Digite a quantidade inicial de cédulas (R$ 100, R$ 50, R$ 20, R$ 10, R$ 5, R$ 2, R$ 1):\n");
+    for (int i = 0; i < QTD_NOTAS; i++) {
+        scanf("%d", &cedulas[i]);
+    }
+
+    int operacao;
+    while (true) {
+        printf("Digite a operação (0 - saque, 1 - depósito, -1 - encerrar): ");
+        scanf("%d", &operacao);
+
+        if (operacao == -1) {
+            break;
+        } else if (operacao == 0) {
+            int valor_saque;
+            printf("Digite o valor do saque: ");
+            scanf("%d", &valor_saque);
+
+            if (realizar_saque(cedulas, valor_saque)) {
+                printf("Saque de R$ %d efetuado.\n", valor_saque);
+            } else {
+                printf("Saque de R$ %d não realizado por falta de cédulas.\n", valor_saque);
+            }
+
+        } else if (operacao == 1) {
+            int deposito[QTD_NOTAS];
+            printf("Digite a quantidade de cédulas a serem depositadas (R$ 100, R$ 50, R$ 20, R$ 10, R$ 5, R$ 2, R$ 1):\n");
+            for (int i = 0; i < QTD_NOTAS; i++) {
+                scanf("%d", &deposito[i]);
+            }
+            realizar_deposito(cedulas, deposito);
+            printf("Depósito realizado.\n");
+        } else {
+            printf("Operação inválida.\n");
+        }
+
+        // Exibir o estado atual do caixa
+        exibir_caixa(cedulas);
+    }
+
+    return 0;
+}
